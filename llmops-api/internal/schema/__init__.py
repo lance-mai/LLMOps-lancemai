@@ -3,3 +3,6 @@
 @Author : mailiangshi@gmail.com
 @File   : __init__.py.py
 """
+from .app_schema import CompletionReq
+
+__all__ = ["CompletionReq"]
