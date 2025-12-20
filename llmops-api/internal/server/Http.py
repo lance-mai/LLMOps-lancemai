@@ -6,6 +6,7 @@
 import os
 
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
 from internal.exception import CustomerException
@@ -16,7 +17,7 @@ from pkg.response import Response, json, HttpCode
 class Http(Flask):
     """http服务引擎"""
 
-    def __init__(self, *args, config: Config, router: Router, **kwargs):
+    def __init__(self, *args, config: Config, db: SQLAlchemy, router: Router, **kwargs):
         # 调用父类构造方法
         super().__init__(*args, **kwargs)
 
@@ -25,6 +26,9 @@ class Http(Flask):
 
         # 注册绑定异常错误处理
         self.register_error_handler(Exception, self._register_error_handler)
+
+        # 初始化Flask扩展
+        db.init_app(self)
 
         # 注册应用路由
         router.register_router(self)

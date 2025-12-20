@@ -5,8 +5,10 @@
 """
 
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
 from injector import Injector
 
+from app.http.module import ExtensionModule
 from config import Config
 from internal.router import Router
 from internal.server import Http
@@ -16,8 +18,8 @@ dotenv = load_dotenv()
 
 config = Config()
 
-injector = Injector()
-app = Http(__name__, config=config, router=injector.get(Router))
+injector = Injector([ExtensionModule])
+app = Http(__name__, config=config, db=injector.get(SQLAlchemy), router=injector.get(Router))
 
 # 只有当这个文件被直接运行时，才会执行下面的代码
 if __name__ == "__main__":
