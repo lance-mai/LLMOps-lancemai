@@ -6,10 +6,10 @@
 import os
 
 from flask import Flask
+from flask_migrate import Migrate
 
 from config import Config
 from internal.exception import CustomerException
-from internal.model import App
 from internal.router import Router
 from pkg.response import Response, json, HttpCode
 from pkg.sqlalchemy import SQLAlchemy
@@ -18,7 +18,15 @@ from pkg.sqlalchemy import SQLAlchemy
 class Http(Flask):
     """http服务引擎"""
 
-    def __init__(self, *args, config: Config, db: SQLAlchemy, router: Router, **kwargs):
+    def __init__(self,
+                 *args,
+                 config:
+                 Config,
+                 db:
+                 SQLAlchemy,
+                 migrate: Migrate,
+                 router: Router,
+                 **kwargs):
         # 调用父类构造方法
         super().__init__(*args, **kwargs)
 
@@ -30,9 +38,10 @@ class Http(Flask):
 
         # 初始化Flask扩展
         db.init_app(self)
-        with self.app_context():
-            _ = App()  # 确保 App 模型被加载。如果没有这条语句，那么代码中没有使用到app模型，那么表不会被创建
-            db.create_all()  # 如果表不存在则创建
+        migrate.init_app(self, db, directory="internal/migration")
+        # with self.app_context():
+        #     _ = App()  # 确保 App 模型被加载。如果没有这条语句，那么代码中没有使用到app模型，那么表不会被创建
+        #     db.create_all()  # 如果表不存在则创建
 
         # 注册应用路由
         router.register_router(self)

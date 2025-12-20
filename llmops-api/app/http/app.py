@@ -5,6 +5,7 @@
 """
 
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 from injector import Injector
 
 from app.http.module import ExtensionModule
@@ -19,7 +20,11 @@ dotenv = load_dotenv()
 config = Config()
 
 injector = Injector([ExtensionModule])
-app = Http(__name__, config=config, db=injector.get(SQLAlchemy), router=injector.get(Router))
+app = Http(__name__,
+           config=config,
+           db=injector.get(SQLAlchemy),
+           migrate=injector.get(Migrate),
+           router=injector.get(Router))
 
 # 只有当这个文件被直接运行时，才会执行下面的代码
 if __name__ == "__main__":
