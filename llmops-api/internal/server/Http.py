@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
 from internal.exception import CustomerException
+from internal.model import App
 from internal.router import Router
 from pkg.response import Response, json, HttpCode
 
@@ -29,6 +30,9 @@ class Http(Flask):
 
         # 初始化Flask扩展
         db.init_app(self)
+        with self.app_context():
+            _ = App()  # 确保 App 模型被加载。如果没有这条语句，那么代码中没有使用到app模型，那么表不会被创建
+            db.create_all()  # 如果表不存在则创建
 
         # 注册应用路由
         router.register_router(self)

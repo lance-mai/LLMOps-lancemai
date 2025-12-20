@@ -7,7 +7,6 @@ from dataclasses import field, dataclass
 from typing import Any
 
 from flask import jsonify
-from werkzeug.http import HTTP_STATUS_CODES
 
 from .http_code import HttpCode
 
@@ -52,24 +51,24 @@ def message(code: HttpCode = None, msg: str = ""):
 
 def success_message(msg: str = ""):
     """成功的消息响应"""
-    return message(code=HTTP_STATUS_CODES, msg=msg)
+    return message(code=HttpCode.SUCCESS, msg=msg)
 
 
 def fail_message(msg: str = ""):
     """失败的消息响应"""
-    return message(code=HTTP_STATUS_CODES, msg=msg)
+    return message(code=HttpCode.FAIL, msg=msg)
 
 
 def not_found_message(msg: str = ""):
     """未找到的消息响应"""
-    return message(code=HTTP_STATUS_CODES, msg=msg)
+    return message(code=HttpCode.NOT_FOUND, msg=msg)
 
 
 def unauthorized_message(msg: str = ""):
     """未授权的消息响应"""
-    return message(code=HTTP_STATUS_CODES, msg=msg)
+    return message(code=HttpCode.UNAUTHORIZED, msg="")
 
 
 def forbidden_message(msg: str = ""):
     """无权限的消息响应"""
-    return message(code=HTTP_STATUS_CODES, msg=msg)
+    return message(code=HttpCode.FORBIDDEN, msg="")

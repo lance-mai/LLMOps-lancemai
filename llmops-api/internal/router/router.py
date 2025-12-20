@@ -27,6 +27,11 @@ class Router:
         # app_handler = AppHandler()
         bp.add_url_rule("/ping", view_func=self.app_handler.ping)
         bp.add_url_rule("/app/completion", methods=["POST"], view_func=self.app_handler.completion)
+        bp.add_url_rule("/app/create", methods=["POST"], view_func=self.app_handler.create_app)
+        # 注意这里是路径参数调用方式，接口调用时直接传入参数，而不是 get?id=xxx，后者是查询参数调用方式
+        bp.add_url_rule("/app/get/<uuid:id>", methods=["GET"], view_func=self.app_handler.get_app)
+        bp.add_url_rule("/app/update/<uuid:id>", methods=["POST"], view_func=self.app_handler.update_app)
+        bp.add_url_rule("/app/delete/<uuid:id>", methods=["DELETE"], view_func=self.app_handler.delete_app)
 
         # 3.将蓝图注册到app中
         app.register_blueprint(bp)

@@ -23,4 +23,4 @@ app = Http(__name__, config=config, db=injector.get(SQLAlchemy), router=injector
 
 # 只有当这个文件被直接运行时，才会执行下面的代码
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
