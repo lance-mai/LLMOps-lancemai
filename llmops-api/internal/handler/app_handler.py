@@ -9,6 +9,7 @@ from flask import request
 from openai import OpenAI
 
 from internal.schema import CompletionReq
+from pkg.response import success_json, validate_error_json
 
 SYSTEM_PROMPT = "你是一个助手，请按照要求完成用户输入的指令。"
 
@@ -24,7 +25,7 @@ class AppHandler:
         # 1.提取从接口中获取的输入 POST
         req = CompletionReq()
         if not req.validate():
-            return req.errors
+            return validate_error_json(req.errors)
         query = request.json.get("query")
 
         # 2.构建OpenAI客户端，并发起请求
@@ -38,10 +39,11 @@ class AppHandler:
             model=os.getenv("MODEL"),
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": query}
+                {"role": "user", "content": query},
             ],
             temperature=0.6,
         )
 
         content = completion.choices[0].message.content
-        return content
+
+        return success_json(data={"content": content})
