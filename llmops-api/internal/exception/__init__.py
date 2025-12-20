@@ -3,3 +3,21 @@
 @Author : mailiangshi@gmail.com
 @File   : __init__.py.py
 """
+
+from .exception import (
+    CustomerException,
+    FailException,
+    ValidateException,
+    NotFoundException,
+    UnauthorizedException,
+    ForbiddenException,
+)
+
+__all__ = [
+    "CustomerException",
+    "FailException",
+    "ValidateException",
+    "NotFoundException",
+    "UnauthorizedException",
+    "ForbiddenException",
+]
