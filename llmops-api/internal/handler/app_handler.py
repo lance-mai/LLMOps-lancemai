@@ -65,12 +65,12 @@ class AppHandler:
                          api_key=os.getenv("API_KEY"),
                          base_url=os.getenv("BASE_URL"),
                          )
-
-        # 3.获得响应，然后将OpenAI的响应传递给前端
-        ai_message = llm.invoke(prompt.invoke({"query": request.json.get("query")}))
-
-        # 4.内容解析
         parser = StrOutputParser()
-        content = parser.invoke(ai_message)
+
+        # 3.构建链
+        chain = prompt | llm | parser
+
+        # 4.调用链得到结果
+        content = chain.invoke({"query": request.json.get("query")})
 
         return success_json(data={"content": content})
