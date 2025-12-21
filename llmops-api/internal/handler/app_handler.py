@@ -9,7 +9,9 @@ from dataclasses import dataclass
 
 from flask import request
 from injector import inject
-from openai import OpenAI
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 
 from internal.schema import CompletionReq
 from internal.service import AppService
@@ -54,24 +56,21 @@ class AppHandler:
         req = CompletionReq()
         if not req.validate():
             return validate_error_json(req.errors)
-        query = request.json.get("query")
+
+        prompt = ChatPromptTemplate.from_template("{query}")
 
         # 2.构建OpenAI客户端，并发起请求
-        client = OpenAI(
-            api_key=os.getenv("API_KEY"),
-            base_url=os.getenv("BASE_URL"),
-        )
+        llm = ChatOpenAI(model=os.getenv("MODEL"),
+                         temperature=0.6,
+                         api_key=os.getenv("API_KEY"),
+                         base_url=os.getenv("BASE_URL"),
+                         )
 
         # 3.获得响应，然后将OpenAI的响应传递给前端
-        completion = client.chat.completions.create(
-            model=os.getenv("MODEL"),
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": query},
-            ],
-            temperature=0.6,
-        )
+        ai_message = llm.invoke(prompt.invoke({"query": request.json.get("query")}))
 
-        content = completion.choices[0].message.content
+        # 4.内容解析
+        parser = StrOutputParser()
+        content = parser.invoke(ai_message)
 
         return success_json(data={"content": content})
